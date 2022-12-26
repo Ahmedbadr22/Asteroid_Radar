@@ -18,8 +18,8 @@ import org.json.JSONObject
 
 class AsteroidRepository(private val database: AsteroidsDatabase) {
     val image = MutableLiveData<PictureOfDay>()
-    val asteroidsList: LiveData<List<Asteroid>> =
-        Transformations.map(database.asteroidDao.getAsteroidsList(getFormattedCurrentDate())) { databaseAsteroidsList ->
+    var asteroidsList: LiveData<List<Asteroid>> =
+        Transformations.map(database.asteroidDao.getAsteroidsByDate(getFormattedCurrentDate())) { databaseAsteroidsList ->
             databaseAsteroidsList.toDomain()
         }
 
@@ -33,7 +33,16 @@ class AsteroidRepository(private val database: AsteroidsDatabase) {
         }
     }
 
-    suspend fun getImageOfTheDay()  =
+    suspend fun listAsteroidsWeekList(): List<Asteroid> = withContext(Dispatchers.IO) {
+        database.asteroidDao.getAsteroidsOfWeek().toDomain()
+    }
+
+    suspend fun listAsteroidsByCurrentDateList(): List<Asteroid> = withContext(Dispatchers.IO) {
+        val currentDate = getFormattedCurrentDate()
+        database.asteroidDao.getAsteroidsByDateList(currentDate).toDomain()
+    }
+
+    suspend fun getImageOfTheDay() =
         withContext(Dispatchers.IO) {
             val response = MoshiNetwork.asteroidApi.getImageOfTheDay()
             withContext(Dispatchers.Main) {

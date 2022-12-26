@@ -2,6 +2,7 @@ package com.ab_dev.asteroid_radar.presentation.fragments.main
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.ab_dev.asteroid_radar.R
 import com.ab_dev.asteroid_radar.data.repository.AsteroidRepository
 import com.ab_dev.asteroid_radar.domain.models.Asteroid
 import com.ab_dev.asteroid_radar.domain.models.PictureOfDay
@@ -12,7 +13,7 @@ class MainViewModel(
     application: Application,
     private val asteroidRepository: AsteroidRepository
 ) : AndroidViewModel(application) {
-    val asteroids : LiveData<List<Asteroid>> = asteroidRepository.asteroidsList
+    val asteroids : MutableLiveData<List<Asteroid>> = asteroidRepository.asteroidsList as MutableLiveData<List<Asteroid>>
     val imageOfTheDay : LiveData<PictureOfDay> = asteroidRepository.image
 
 
@@ -23,6 +24,24 @@ class MainViewModel(
         }
     }
 
+    private fun listAsteroidsWeekList() {
+        viewModelScope.launch {
+            asteroids.value = asteroidRepository.listAsteroidsWeekList()
+        }
+    }
+
+    private fun listAsteroidsOfCurrentDateList() {
+        viewModelScope.launch {
+            asteroids.value = asteroidRepository.listAsteroidsByCurrentDateList()
+        }
+    }
+
+    fun onFilterOptionChange(itemId: Int) {
+        when(itemId) {
+            R.id.show_all_menu -> listAsteroidsWeekList()
+            R.id.show_rent_menu -> listAsteroidsOfCurrentDateList()
+        }
+    }
 
     // view Model Factory
     class Factory(

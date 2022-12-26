@@ -14,7 +14,7 @@ import com.ab_dev.asteroid_radar.data.repository.AsteroidRepository
 import com.ab_dev.asteroid_radar.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
-
+    private lateinit var viewModel : MainViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -23,7 +23,7 @@ class MainFragment : Fragment() {
         binding.lifecycleOwner = this
 
         val database = Database.getDatabaseInstance(requireContext())
-        val viewModel = ViewModelProvider(
+        viewModel = ViewModelProvider(
             this,
             MainViewModel.Factory(
                 application = requireActivity().application,
@@ -38,6 +38,7 @@ class MainFragment : Fragment() {
                 binding.statusLoadingWheel.visibility = View.GONE
             }
         }
+
         val adapter = MainAdapter(AsteroidClickListener { asteroid ->
             val navAction = MainFragmentDirections.actionShowDetail(asteroid)
             findNavController().navigate(navAction)
@@ -58,6 +59,7 @@ class MainFragment : Fragment() {
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                viewModel.onFilterOptionChange(menuItem.itemId)
                 return true
             }
         }, viewLifecycleOwner)

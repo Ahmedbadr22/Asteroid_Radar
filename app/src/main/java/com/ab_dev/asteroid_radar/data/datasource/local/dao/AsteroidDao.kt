@@ -10,7 +10,13 @@ import com.ab_dev.asteroid_radar.data.model.DatabaseAsteroid
 @Dao
 interface AsteroidDao {
     @Query("SELECT * FROM databaseasteroid WHERE closeApproachDate = :date ORDER BY closeApproachDate ASC")
-    fun getAsteroidsList(date: String): LiveData<List<DatabaseAsteroid>>
+    fun getAsteroidsByDate(date: String): LiveData<List<DatabaseAsteroid>>
+
+    @Query("SELECT * FROM databaseasteroid WHERE closeApproachDate = :date ORDER BY closeApproachDate ASC")
+    fun getAsteroidsByDateList(date: String): List<DatabaseAsteroid>
+
+    @Query("SELECT * FROM databaseasteroid ORDER BY closeApproachDate ASC")
+    fun getAsteroidsOfWeek(): List<DatabaseAsteroid>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(databaseAsteroidsList: List<DatabaseAsteroid>)

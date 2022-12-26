@@ -21,8 +21,8 @@ fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
 
 @BindingAdapter("setImageSrc")
 fun bindAsteroidImageSrc(imageView: ImageView, pictureOfDay: PictureOfDay?) {
-    pictureOfDay?.let {
-        Picasso.get().load(it.url).into(imageView)
+    pictureOfDay?.let { picture ->
+        if (picture.mediaType == "image") Picasso.get().load(picture.url).into(imageView)
     }
 }
 
